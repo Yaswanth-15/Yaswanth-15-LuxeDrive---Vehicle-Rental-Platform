@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Wishlist - LuxeDrive</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            background-color: #000;
+            color: #fff;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h2 {
+            font-family: 'Playfair Display', serif;
+            color: #ffd700;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .vehicle-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        .vehicle-card {
+            background-color: rgba( 0, 0, 0);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            text-decoration: none;
+             color: inherit; /* Inherit text color from body */
+        }
+        .vehicle-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 30px rgba(255, 215, 0, 0.2);
+        }
+        .vehicle-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.3));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .vehicle-card:hover::before {
+            opacity: 1;
+        }
+        .vehicle-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px 8px 0 0;
+        }
+        .vehicle-info {
+            padding: 20px;
+            text-align: center;
+        }
+        .vehicle-info h3 {
+            font-family: 'Playfair Display', serif;
+            margin-top: 0;
+            font-weight: 700;
+            color: #fff;
+        }
+        .vehicle-info p {
+            font-size: 1.1rem;
+            color: #fff;
+        }
+        .wishlist-empty {
+            text-align: center;
+            padding: 20px;
+            font-size: 1.2em;
+            color: #aaa;
+        }
+
+        /* ADD TO WISHLIST Styles */
+        .wishlist-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5em;
+            color: #ffefd5;  /* Cream color */
+            padding: 5px;
+            transition: color 0.3s ease;
+        }
+
+        .wishlist-button:hover {
+            color: #ffd700; /* Gold color on hover */
+        }
+        /* ADD TO WISHLIST Styles */
+        .no-underline {
+            text-decoration: none !important;
+        }
+
+        /* "Explore More Vehicles" Button Styles */
+        .explore-button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #ffd700;
+            color: #000;
+            border: 2px solid #ffd700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            border-radius: 8px;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .explore-button:hover {
+            background-color: #000;
+            color: #ffd700;
+            border-color: #ffd700;
+        }
+        /* "Explore More Vehicles" Button Styles */
+         /* Container to center the button */
+        .button-container {
+            text-align: center;
+            margin-top: 20px; /* Add some spacing */
+        }
+         /* Share button style */
+        .share-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5em;
+            color: #ffefd5; /* Cream color */
+            padding: 5px;
+            transition: color 0.3s ease;
+        }
+
+        .share-button:hover {
+            color: #ffd700; /* Gold color on hover */
+        }
+
+          /* Copy Link Button Style */
+        .copy-link-button {
+            background-color: #ffd700;
+            color: #000;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: 'Montserrat', sans-serif;
+            margin-top: 5px;
+            display: none; /* Hidden by default */
+        }
+
+        .copy-link-button:hover {
+            background-color: #000;
+            color: #ffd700;
+        }
+         /* Vertical Icon Container */
+        .icon-container {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end; /* Align items to the right */
+        }
+        /* Vertical Icon Container */
+
+        .icon-container button {
+            margin-bottom: 5px; /* Space between the icons */
+        }
+
+        /* Share button style */
+        /* Copy Link Button Style */
+        /* Container to center the button */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>My Wishlist</h2>
+        {% if wishlist_items %}
+        <div class="vehicle-grid">
+            {% for item in wishlist_items %}
+                <div class="vehicle-card" onclick="window.location.href='{% url 'booking' %}?vehicle_id={{item.vehicle.id}}'">
+                       <a href="{% url 'booking' %}?vehicle_id={{item.vehicle.id}}" class="no-underline">
+                        <img src="{{ item.vehicle.image.url }}" alt="{{ item.vehicle.name }}">
+                        <div class="vehicle-info">
+                            <h3>{{ item.vehicle.name }}</h3>
+                            <p>Starting from ₹{{ item.vehicle.price }}/day</p>
+                        </div>
+                       </a>
+                         <!-- Vertical Icon Container -->
+                     <div class="icon-container">
+                          <!-- wishlist button should be first -->
+                          <form method="post" action="{% url 'remove_from_wishlist' item.vehicle.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="wishlist-button">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                            </form>
+                            <!-- Share button -->
+                            <button class="share-button" onclick="checkAndShare('{% url 'booking' %}?vehicle_id={{ item.vehicle.id }}', this)">
+                                <i class="fas fa-share-alt"></i>
+                            </button>
+                             <button class="copy-link-button" onclick="copyToClipboard('{% url 'booking' %}?vehicle_id={{ vehicle.id }}', this)">Copy Link</button>
+                            <!-- Share button -->
+                     </div>
+                     <!-- Vertical Icon Container -->
+                </div>
+            {% endfor %}
+        </div>
+        {% else %}
+            <p class="wishlist-empty">Your wishlist is empty.</p>
+        {% endif %}
+        <!-- Center the button -->
+        <div class="button-container">
+            <a href="{% url 'vehicles' %}" class="explore-button">Explore More Vehicles</a>
+        </div>
+         <!-- Center the button -->
+    </div>
+        <script>
+       function checkAndShare(bookingUrl, buttonElement) {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Check out this LuxeDrive Vehicle!',
+                    url: bookingUrl
+                }).then(() => {
+                    console.log('Shared successfully');
+                }).catch((error) => {
+                    console.log('Error sharing', error);
+                });
+            } else {
+                // Show the copy link button
+                let copyButton = buttonElement.nextElementSibling; // Get the copy button
+                copyButton.style.display = 'inline-block';
+            }
+        }
+        function copyToClipboard(text, buttonElement) {
+            navigator.clipboard.writeText(text)
+                .then(() => {
+                    buttonElement.textContent = 'Copied!'; // Change button text
+                    setTimeout(() => {
+                        buttonElement.textContent = 'Copy Link'; // Revert text after a delay
+                    }, 2000);
+                })
+                .catch(err => {
+                    console.error('Could not copy text: ', err);
+                    alert('Sorry, could not copy the link. Please copy it manually: ' + text);
+                });
+        }
+    </script>
+</body>
+</html>

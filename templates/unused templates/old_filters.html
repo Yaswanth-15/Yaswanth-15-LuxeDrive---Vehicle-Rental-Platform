@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LuxeDrive - Premium Car Rentals</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* General Styles */
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            background-color: #000;
+            color: #fff;
+            scroll-behavior: smooth;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .page {
+            display: none;
+            padding-top: 80px;
+        }
+        .page.active {
+            display: block;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: rgba(0, 0, 0, 0.8);
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            top: 0;
+            left: 0;
+            padding: 15px 0;
+            transition: background-color 0.3s ease;
+        }
+        header.sticky {
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-logo {
+            color: #ffd700;
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+        }
+        .nav-links {
+            display: flex;
+        }
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+        .nav-links a:hover {
+            color: #ffd700;
+        }
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Vehicles Page Styles */
+        .vehicles-container {
+            display: flex;
+            gap: 30px;
+            margin-top: 20px;
+            position: relative;
+        }
+        .filters-menu {
+            position: fixed;
+            left: -300px;
+            top: 80px;
+            width: 300px;
+            height: calc(100vh - 80px);
+            background-color: rgba(34, 34, 34, 0.9);
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.1);
+            transition: all 0.3s ease;
+            overflow-y: auto;
+            z-index: 100;
+        }
+        .filters-menu.open {
+            left: 0;
+        }
+        .filters-toggle {
+            position: fixed;
+            left: 20px;
+            top: 100px;
+            background-color: #ffd700;
+            color: #000;
+            border: none;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 101;
+            transition: all 0.3s ease;
+        }
+        .filters-toggle:hover {
+            background-color: #fff;
+        }
+        .filters-menu h3 {
+            color: #ffd700;
+            margin-bottom: 20px;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+        }
+        .filter-group {
+            margin-bottom: 25px;
+        }
+        .filter-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #fff;
+            font-weight: 600;
+        }
+        .filter-group input[type="text"],
+        .filter-group select {
+            width: 100%;
+            padding: 12px;
+            background-color: rgba(51, 51, 51, 0.8);
+            border: 1px solid #ffd700;
+            color: #fff;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        .filter-group input[type="text"]:focus,
+        .filter-group select:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.5);
+        }
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .radio-group label:hover {
+            color: #ffd700;
+        }
+        .filter-group input[type="radio"] {
+            margin-right: 10px;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #ffd700;
+            border-radius: 50%;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        .filter-group input[type="radio"]:checked {
+            background-color: #ffd700;
+            box-shadow: 0 0 0 2px #000 inset;
+        }
+        #applyFilters {
+            width: 100%;
+            padding: 12px;
+            background-color: #ffd700;
+            color: #000;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        #applyFilters:hover {
+            background-color: #fff;
+            color: #000;
+        }
+        .vehicle-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            flex-grow: 1;
+        }
+        .vehicle-card {
+            background-color: rgba(51, 51, 51, 0.8);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        .vehicle-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 30px rgba(255, 215, 0, 0.2);
+        }
+        .vehicle-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.3));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .vehicle-card:hover::before {
+            opacity: 1;
+        }
+        .vehicle-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .vehicle-info {
+            padding: 20px;
+        }
+        .vehicle-info h3 {
+            color: #ffd700;
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-family: 'Playfair Display', serif;
+        }
+        .vehicle-info p {
+            margin: 0;
+            color: #fff;
+        }
+
+        /* Responsive Design */
+        @media screen and (max-width: 768px) {
+            .vehicles-container {
+                flex-direction: column;
+            }
+            .filters-menu {
+                width: 100%;
+            }
+            .vehicle-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header id="header">
+        <nav class="container">
+            <a href="#" onclick="showPage('home')" class="nav-logo">LuxeDrive</a>
+            <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+            <div class="nav-links">
+                <a href="#" onclick="showPage('vehicles')">Vehicles</a>
+                <a href="#" onclick="showPage('booking')">Book Now</a>
+                <a href="#" onclick="showPage('about')">About</a>
+                <a href="#" onclick="showPage('contact')">Contact</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div id="vehicles" class="page active">
+            <div class="container">
+                <h2>Our Luxury Fleet</h2>
+                <button class="filters-toggle" onclick="toggleFilters()">☰</button>
+                <div class="vehicles-container">
+                    <div class="filters-menu">
+                        <h3>Refine Your Search</h3>
+                        <div class="filter-group">
+                            <label for="search">Search Vehicles</label>
+                            <input type="text" id="search" placeholder="e.g., Rolls-Royce, Bentley">
+                        </div>
+                        <div class="filter-group">
+                            <label>Price Range</label>
+                            <div class="radio-group">
+                                <label><input type="radio" name="price_range" value="cheap"> Affordable Luxury (< ₹1000)</label>
+                                <label><input type="radio" name="price_range" value="mid"> Premium (₹1000 - ₹5000)</label>
+                                <label><input type="radio" name="price_range" value="expensive"> Ultra Luxury (> ₹5000)</label>
+                            </div>
+                        </div>
+                        <button id="applyFilters">Apply Filters</button>
+                    </div>
+                    <div class="vehicle-grid" id="fullVehicleGrid">
+                        <!-- Vehicle cards will be dynamically inserted here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Other pages (home, booking, about, contact) would go here -->
+
+    </main>
+
+    <script>
+        // Simulated vehicle data
+        const vehicles = [
+            { id: 1, name: 'Rolls-Royce Phantom', image: 'https://images.unsplash.com/photo-1563720360172-67b8f3dce741?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80', price: 1500, description: 'Experience unparalleled luxury with the Rolls-Royce Phantom.' },
+            { id: 2, name: 'Bentley Continental GT', image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80', price: 1200, description: 'The Bentley Continental GT combines power with elegance.' },
+            { id: 3, name: 'Mercedes-Benz S-Class', image: 'https://images.unsplash.com/photo-1609620901045-330e158a8d83?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80', price: 800, description: 'The Mercedes-Benz S-Class sets the standard for luxury sedans.' },
+            { id: 4, name: 'Lamborghini Aventador', image: 'https://images.unsplash.com/photo-1544829099-b9a0c07fad1a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80', price: 2000, description: 'For the thrill-seekers, the Lamborghini Aventador offers unmatched performance.' },
+            { id: 5, name: 'Aston Martin DB11', image: 'https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1469&q=80', price: 1800, description: 'The Aston Martin DB11 embodies timeless British elegance.' },
+            { id: 6, name: 'Ferrari 488 GTB', image: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80', price: 2200, description: 'Experience the thrill of Italian engineering with the Ferrari 488 GTB.' },
+        ];
+
+        function createVehicleCard(vehicle) {
+            return `
+                <div class="vehicle-card">
+                    <img src="${vehicle.image}" alt="${vehicle.name}">
+                    <div class="vehicle-info">
+                        <h3>${vehicle.name}</h3>
+                        <p>${vehicle.description}</p>
+                        <p>Price: ₹${vehicle.price}/day</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function displayVehicles(vehiclesToDisplay) {
+            const vehicleGrid = document.getElementById('fullVehicleGrid');
+            vehicleGrid.innerHTML = vehiclesToDisplay.map(createVehicleCard).join('');
+        }
+
+        function applyFilters() {
+            const searchQuery = document.getElementById('search').value.toLowerCase();
+            const priceRange = document.querySelector('input[name="price_range"]:checked')?.value;
+
+            const filteredVehicles = vehicles.filter(vehicle => {
+                const matchesSearch = vehicle.name.toLowerCase().includes(searchQuery) ||
+                                      vehicle.description.toLowerCase().includes(searchQuery) ||
+                                      vehicle.price.toString().includes(searchQuery);
+
+                let matchesPriceRange = true;
+                if (priceRange) {
+                    if (priceRange === 'cheap') matchesPriceRange = vehicle.price < 1000;
+                    else if (priceRange === 'mid') matchesPriceRange = vehicle.price >= 1000 && vehicle.price <= 5000;
+                    else if (priceRange === 'expensive') matchesPriceRange = vehicle.price > 5000;
+                }
+
+                return matchesSearch && matchesPriceRange;
+            });
+
+            displayVehicles(filteredVehicles);
+        }
+
+        function showLoadingAnimation() {
+            const fullVehicleGrid = document.getElementById('fullVehicleGrid');
+            fullVehicleGrid.style.opacity = '0.5';
+            fullVehicleGrid.style.pointerEvents = 'none';
+            
+            setTimeout(() => {
+                fullVehicleGrid.style.opacity = '1';
+                fullVehicleGrid.style.pointerEvents = 'auto';
+            }, 500);
+        }
+
+        function toggleFilters() {
+            const filtersMenu = document.querySelector('.filters-menu');
+            filtersMenu.classList.toggle('open');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            displayVehicles(vehicles);
+            document.getElementById('applyFilters').addEventListener('click', () => {
+                showLoadingAnimation();
+                applyFilters();
+            });
+        });
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        function toggleMenu() {
+            const navLinks = document.querySelector('.nav-links');
+            navLinks.classList.toggle('active');
+        }
+
+        // Sticky header
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('header');
+            if (window.scrollY > 50) {
+                header.classList.add('sticky');
+            } else {
+                header.classList.remove('sticky');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Vehicles - LuxeDrive</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+    /*Reuse existing styles, modify as needed*/
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            background-color: #000;
+            color: #fff;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #111;
+            border-radius: 8px;
+        }
+        h2 {
+            font-family: 'Playfair Display', serif;
+            color: #ffd700;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+        th {
+            background-color: #222;
+            color: #fff;
+        }
+        tr:nth-child(even) {
+            background-color: #1a1a1a;
+        }
+        a {
+            color: #ffd700;
+            text-decoration: none;
+            display: inline-block;
+            padding: 8px 12px;
+            border-radius: 4px;
+            background-color: #333;
+            margin-right: 10px;
+        }
+         a:hover {
+            background-color: #555;
+         }
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>My Vehicles</h2>
+        <div class="button-container">
+            <a href="{% url 'add_vehicle' %}">Add Vehicle</a>
+            <a href="{% url 'home' %}">Return to Home</a>
+        </div>
+        {% if vehicles %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for vehicle in vehicles %}
+                        <tr>
+                            <td>{{ vehicle.name }}</td>
+                            <td>₹{{ vehicle.price }}</td>
+                            <td>
+                                <a href="{% url 'edit_vehicle' vehicle.id %}">Edit</a>
+                                <a href="{% url 'delete_vehicle' vehicle.id %}">Delete</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No vehicles added yet.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

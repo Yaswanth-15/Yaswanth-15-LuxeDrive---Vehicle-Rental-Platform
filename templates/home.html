@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LuxeDrive - Premium Car Rentals</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* General Styles */
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            background-color: #000;
+            color: #fff;
+            scroll-behavior: smooth;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .page {
+            display: none;
+            padding-top: 80px;
+        }
+        .page.active {
+            display: block;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: rgba(0, 0, 0, 0.8);
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            top: 0;
+            left: 0;
+            padding: 15px 0;
+            transition: background-color 0.3s ease;
+        }
+        header.sticky {
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-logo {
+            color: #ffd700;
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+        }
+        .nav-links {
+            display: flex;
+        }
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+        .nav-links a:hover {
+            color: #ffd700;
+        }
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Hero Section Styles */
+        .hero {
+            height: 100vh;
+            background-image: url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background-attachment: fixed;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+        }
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            color: #fff;
+            max-width: 80%;
+        }
+        h1, h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
+        }
+        h2 {
+            font-size: 3rem;
+        }
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.6);
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #ffd700;
+            color: #000;
+            border: 2px solid #ffd700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            border-radius: 8px;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .btn:hover {
+            background-color: #000;
+            color: #ffd700;
+            border-color: #ffd700;
+        }
+
+        /* Featured Vehicles Styles */
+        .featured-vehicles {
+            padding: 80px 0;
+            background-color: #111;
+            color: #fff;
+        }
+        .vehicle-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .vehicle-card {
+            background-color: #000;
+            overflow: hidden;
+            border-radius: 8px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        .vehicle-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(255, 215, 0, 0.3);
+        }
+        .vehicle-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,215,0,0.1), rgba(255,215,0,0.3));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .vehicle-card:hover::after {
+            opacity: 1;
+        }
+        .vehicle-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px 8px 0 0;
+        }
+        .vehicle-info {
+            padding: 20px;
+            text-align: center;
+        }
+        .vehicle-info h3 {
+            font-family: 'Playfair Display', serif;
+            margin-top: 0;
+            font-weight: 700;
+        }
+        .vehicle-info p {
+            font-size: 1.1rem;
+        }
+
+        /* Booking Form Styles */
+        .booking-form {
+            background-color: #111;
+            padding: 40px;
+            margin-top: 40px;
+            color: #fff;
+            border-radius: 8px;
+        }
+        .booking-form h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        form {
+            display: grid;
+            gap: 20px;
+            width: 100%;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            background-color: #222;
+            border: none;
+            color: #fff;
+            border-radius: 8px;
+            font-family: 'Montserrat', sans-serif;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border: 2px solid #ffd700;
+        }
+        button {
+            background-color: #ffd700;
+            color: #000;
+            border: none;
+            padding: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-weight: 600;
+            border-radius: 8px;
+            font-family: 'Montserrat', sans-serif;
+        }
+        button:hover {
+            background-color: #000;
+            color: #ffd700;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.8);
+        }
+        .modal-content {
+            background-color: #222;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #ffd700;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 8px;
+        }
+        .close {
+            color: #ffd700;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover {
+            color: #fff;
+        }
+
+        /* Reviews Section */
+        .reviews {
+            background-color: #222;
+            padding: 60px 0;
+        }
+        .review-card {
+            background-color: #333;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+        .review-card:hover {
+            transform: translateY(-5px);
+        }
+        .review-card p {
+            font-style: italic;
+        }
+        .review-card .author {
+            text-align: right;
+            font-weight: 600;
+            color: #ffd700;
+        }
+
+        /* About Page Styles */
+        .about-content {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+        .about-text {
+            flex: 1;
+        }
+        .about-image {
+            flex: 1;
+            max-width: 100%;
+        }
+        .about-image img {
+            width: 100%;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+        }
+        .about-image img:hover {
+            transform: scale(1.05);
+        }
+
+        /* Contact Page Styles */
+        .contact-info {
+            margin-bottom: 40px;
+        }
+        .contact-form textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+
+        /* Booking Confirmation Styles */
+        .booking-confirmation {
+            background-color: #111;
+            padding: 40px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .booking-details {
+            background-color: #222;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: left;
+        }
+        .booking-details h3 {
+            color: #ffd700;
+            margin-bottom: 15px;
+            font-family: 'Playfair Display', serif;
+        }
+        .booking-details p {
+            margin: 10px 0;
+        }
+        .confirmation-actions {
+            margin-top: 30px;
+        }
+        .confirmation-actions .btn {
+            margin: 0 10px;
+        }
+
+        /* Testimonial Carousel */
+        .testimonial-carousel {
+            position: relative;
+            overflow: hidden;
+            padding: 40px 0;
+        }
+        .testimonial-slide {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        .testimonial-slide.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .testimonial-text {
+            font-style: italic;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+        .testimonial-author {
+            font-weight: 600;
+            color: #ffd700;
+        }
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(255, 215, 0, 0.3);
+            color: #fff;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: background-color 0.3s ease;
+        }
+        .carousel-btn:hover {
+            background-color: rgba(255, 215, 0, 0.5);
+        }
+        .carousel-btn.prev {
+            left: 10px;
+        }
+        .carousel-btn.next {
+            right: 10px;
+        }
+
+        /* FAQ Section */
+        .faq-section {
+            background-color: #111;
+            padding: 60px 0;
+        }
+        .faq-item {
+            margin-bottom: 20px;
+        }
+        .faq-question {
+            background-color: #222;
+            padding: 15px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+        .faq-question:hover {
+            background-color: #333;
+        }
+        .faq-answer {
+            display: none;
+            padding: 15px;
+            background-color: #1a1a1a;
+            border-radius: 0 0 8px 8px;
+        }
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+
+        /* Footer Styles */
+        footer {
+            background-color: #000;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        footer a {
+            color: #ffd700;
+            text-decoration: none;
+        }
+
+        /* New Feature: Image Gallery */
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 40px 0;
+        }
+        .gallery-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+        .gallery-image:hover {
+            transform: scale(1.05);
+        }
+
+        /* New Feature: Newsletter Signup */
+        .newsletter-signup {
+            background-color: #222;
+            padding: 40px 0;
+            text-align: center;
+        }
+        .newsletter-form.newsletter-form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .newsletter-form input[type="email"] {
+            flex-grow: 1;
+            padding: 10px;
+            border-radius: 4px;
+            border: none;
+        }
+        .newsletter-form button {
+            padding: 10px 20px;
+            background-color: #ffd700;
+            color: #000;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .newsletter-form button:hover {
+            background-color: #e6c200;
+        }
+
+        /* Responsive Design */
+        @media screen and (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            h2 { font-size: 2rem; }
+            p { font-size: 1rem; }
+            .vehicle-grid { grid-template-columns: 1fr; }
+            .container { padding: 0 15px; }
+            .confirmation-actions .btn { display: block; margin: 10px auto; }
+            .menu-toggle { display: block; }
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background-color: rgba(0, 0, 0, 0.9);
+                flex-direction: column;
+                padding: 20px;
+            }
+            .nav-links.active { display: flex; }
+            .nav-links a { margin: 10px 0; }
+            .newsletter-form { flex-direction: column; }
+            .newsletter-form input[type="email"], .newsletter-form button {
+                width: 100%;
+            }
+            header {
+                padding: 10px 0;
+            }
+            .nav-logo {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header id="header">
+        <nav class="container">
+            <a href="#" onclick="showPage('home')" class="nav-logo">LuxeDrive</a>
+            <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+            <div class="nav-links">
+                <a href="{% url 'vehicles' %}">Vehicles</a>
+                <a href="#" onclick="showPage('booking')">Book Now</a>
+                <a href="#" onclick="showPage('about')">About</a>
+                <a href="#" onclick="showPage('contact')">Contact</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div id="home" class="page active">
+            <section class="hero">
+                <div class="container hero-content">
+                    <h1>Experience Unparalleled Luxury</h1>
+                    <p>Indulge in the finest selection of premium vehicles for your journey.</p>
+                    <a href="{% url 'vehicles' %}" class="btn">Explore Fleet</a>
+                </div>
+            </section>
+
+            <section class="featured-vehicles">
+                <div class="container">
+                    <h2>Featured Vehicles</h2>
+                    <div class="vehicle-grid" id="vehicleGrid">
+                        <!-- Vehicle cards will be dynamically inserted here -->
+                    </div>
+                </div>
+            </section>
+
+            <section class="reviews">
+                <div class="container">
+                    <h2>Customer Reviews</h2>
+                    <div id="reviewsContainer">
+                        <!-- Reviews will be dynamically inserted here -->
+                    </div>
+                </div>
+            </section>
+
+            <section class="testimonial-carousel">
+                <div class="container">
+                    <h2>What Our Clients Say</h2>
+                    <div id="testimonialSlides">
+                        <!-- Testimonial slides will be dynamically inserted here -->
+                    </div>
+                    <button class="carousel-btn prev" onclick="changeTestimonial(-1)">&#10094;</button>
+                    <button class="carousel-btn next" onclick="changeTestimonial(1)">&#10095;</button>
+                </div>
+            </section>
+
+            <section class="image-gallery">
+                <div class="container">
+                    <h2>Luxury Fleet Gallery</h2>
+                    <div id="imageGallery">
+                        <!-- Gallery images will be dynamically inserted here -->
+                    </div>
+                </div>
+            </section>
+
+            <section class="newsletter-signup">
+                <div class="container">
+                    <h2>Stay Updated</h2>
+                    <p>Subscribe to our newsletter for exclusive offers and updates.</p>
+                    <form id="newsletterForm" class="newsletter-form">
+                        <input type="email" placeholder="Enter your email" required>
+                        <button type="submit">Subscribe</button>
+                    </form>
+                </div>
+            </section>
+        </div>
+        
+        <!-- <div id="vehicles" class="page">
+            <div class="container">
+                <h2>Our Luxury Fleet</h2>
+                <div class="vehicle-grid" id="fullVehicleGrid">
+                    All vehicle cards will be dynamically inserted here 
+                </div>
+            </div>
+        </div> -->
+
+        <div id="booking" class="page">
+            <div class="container">
+                <h2>Book Your Luxury Experience</h2>
+                <form id="bookingForm" class="booking-form">
+                    <select id="vehicleSelect" required>
+                        <option value="">Select a Vehicle</option>
+                    </select>
+                    <input type="date" id="startDate" required>
+                    <input type="date" id="endDate" required>
+                    <input type="text" id="name" placeholder="Your Name" required>
+                    <input type="email" id="email" placeholder="Your Email" required>
+                    <input type="tel" id="phone" placeholder="Your Phone Number" required>
+                    <textarea id="specialRequests" placeholder="Special Requests (Optional)"></textarea>
+                    <button type="submit">Book Now</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="bookingConfirmation" class="page">
+            <div class="container">
+                <div class="booking-confirmation">
+                    <h2>Booking Confirmed!</h2>
+                    <p>Thank you for choosing LuxeDrive. Your luxury experience awaits!</p>
+                    <div class="booking-details" id="bookingDetails">
+                        <!-- Booking details will be dynamically inserted here -->
+                    </div>
+                    <div class="confirmation-actions">
+                        <a href="#" onclick="showPage('home')" class="btn">Return to Home</a>
+                        <a href="{% url 'vehicles' %}" class="btn">Explore More Vehicles</a>
+                    </div>
+                </div>
+            </div>
+        </div> 
+
+        <div id="about" class="page">
+            <div class="container">
+                <h2>About LuxeDrive</h2>
+                <div class="about-content">
+                    <div class="about-image">
+                        <img src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Luxury cars in showroom">
+                    </div>
+                    <div class="about-text">
+                        <p>LuxeDrive is the premier luxury car rental service, offering an unparalleled fleet of high-end vehicles for those who demand the very best. Our mission is to provide an extraordinary driving experience coupled with impeccable service.</p>
+                        <p>Founded in 2010, we have consistently set the standard for luxury car rentals, catering to discerning clients for special occasions, business trips, or simply for the pleasure of driving a world-class automobile.</p>
+                        <p>At LuxeDrive, we believe that luxury is in the details. From our meticulously maintained vehicles to our personalized customer service, every aspect of your rental experience is crafted to exceed your expectations.</p>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+
+        <div id="contact" class="page">
+            <div class="container">
+                <h2>Contact Us</h2>
+                <div class="contact-info">
+                    <p>Have questions or special requests? Our dedicated team is here to assist you.</p>
+                    <p>Phone: +1 (555) 123-4567</p>
+                    <p>Email: info@luxedrive.com</p>
+                    <p>Address: 123 Luxury Lane, Beverly Hills, CA 90210</p>
+                </div>
+                <form id="contactForm" class="contact-form">
+                    <input type="text" id="contactName" placeholder="Your Name" required>
+                    <input type="email" id="contactEmail" placeholder="Your Email" required>
+                    <input type="tel" id="contactPhone" placeholder="Your Phone Number">
+                    <textarea id="message" placeholder="Your Message" required></textarea>
+                    <button type="submit">Send Message</button>
+                </form>
+            </div>
+        </div>
+
+        <section class="faq-section">
+            <div class="container">
+                <h2>Frequently Asked Questions</h2>
+                <div id="faqContainer">
+                    <!-- FAQ items will be dynamically inserted here -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 LuxeDrive - Luxury Car Rentals | <a href="#" onclick="showPage('about')">Privacy Policy</a> | <a href="#" onclick="showPage('about')">Terms of Service</a></p>
+    </footer>
+
+    <div id="vehicleModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="modalVehicleName"></h2>
+            <img id="modalVehicleImage" src="" alt="" style="width:100%; max-height:300px; object-fit:cover;">
+            <p id="modalVehicleDescription"></p>
+            <p id="modalVehiclePrice"></p>
+            <button id="modalBookNow" class="btn">Book Now</button>
+        </div>
+    </div>
+
+    <script>
+        // Simulated backend data
+        const vehicles = [
+            { id: 1, name: 'Rolls-Royce Phantom', image: 'https://images.unsplash.com/photo-1563720360172-67b8f3dce741?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80', price: 1500, description: 'Experience unparalleled luxury with the Rolls-Royce Phantom. This iconic vehicle offers supreme comfort and sophistication.' },
+            { id: 2, name: 'Bentley Continental GT', image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80', price: 1200, description: 'The Bentley Continental GT combines power with elegance. Perfect for those who demand performance and luxury.' },
+            { id: 3, name: 'Mercedes-Benz S-Class', image: 'https://images.pexels.com/photos/18370955/pexels-photo-18370955/free-photo-of-black-mercedes-s-class.jpeg', price: 800, description: 'The Mercedes-Benz S-Class sets the standard for luxury sedans with its cutting-edge technology and refined comfort.' },
+            { id: 4, name: 'Lamborghini Aventador', image: 'https://images.unsplash.com/photo-1544829099-b9a0c07fad1a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80', price: 2000, description: 'For the thrill-seekers, the Lamborghini Aventador offers unmatched performance and head-turning design.' },
+            { id: 5, name: 'Aston Martin DB11', image: 'https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1469&q=80', price: 1800, description: 'The Aston Martin DB11 embodies timeless British elegance with modern performance capabilities.' },
+            { id: 6, name: 'Ferrari 488 GTB', image: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80', price: 2200, description: 'Experience the thrill of Italian engineering with the Ferrari 488 GTB, a masterpiece of speed and style.' },
+        ];
+
+        const reviews = [
+            { id: 1, text: "An unforgettable experience! The Rolls-Royce Phantom exceeded all my expectations.", author: "John D." },
+            { id: 2, text: "LuxeDrive made my wedding day even more special. Impeccable service!", author: "Sarah M." },
+            { id: 3, text: "Driving the Bentley Continental GT was a dream come true. Will definitely rent again!", author: "Michael R." },
+            { id: 4, text: "The attention to detail in the Mercedes-Benz S-Class was astounding. Luxury at its finest.", author: "Emily L." },
+            { id: 5, text: "Renting the Lamborghini Aventador for my birthday was the best decision ever. What a rush!", author: "Alex K." }
+        ];
+
+        const testimonials = [
+            { text: "LuxeDrive provided an exceptional experience from start to finish. The car was immaculate, and the service was top-notch.", author: "Emma S." },
+            { text: "I've rented from many luxury car services, but LuxeDrive stands out. Their attention to detail is unmatched.", author: "David R." },
+            { text: "The ease of booking and the quality of the vehicles make LuxeDrive my go-to for special occasions.", author: "Sophia L." }
+        ];
+
+        const faqs = [
+            { question: "What documents do I need to rent a car?", answer: "You'll need a valid driver's license, proof of insurance, and a credit card for the security deposit. For luxury vehicles, additional documentation may be required." },
+            { question: "Is there an age requirement for renting?", answer: "Yes, the minimum age to rent from LuxeDrive is 25 years old. Some high-performance vehicles may have higher age requirements." },
+            { question: "Do you offer chauffeur services?", answer: "Yes, we offer professional chauffeur services for all our vehicles. This can be arranged during the booking process." },
+            { question: "What is your cancellation policy?", answer: "Cancellations made 48 hours before the rental date are fully refundable. Late cancellations may incur a fee." }
+        ];
+
+        // Sticky Header
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('header');
+            if (window.scrollY > 50) {
+                header.classList.add('sticky');
+            } else {
+                header.classList.remove('sticky');
+            }
+        });
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        function toggleMenu() {
+            const navLinks = document.querySelector('.nav-links');
+            navLinks.classList.toggle('active');
+        }
+
+        function displayVehicles() {
+            const vehicleGrid = document.getElementById('vehicleGrid');
+            //const fullVehicleGrid = document.getElementById('fullVehicleGrid');
+            const vehicleSelect = document.getElementById('vehicleSelect');
+
+            vehicles.forEach((vehicle, index) => {
+                const vehicleCard = createVehicleCard(vehicle);
+                
+                if (index < 3) {
+                    vehicleGrid.appendChild(vehicleCard.cloneNode(true));
+                }
+                //fullVehicleGrid.appendChild(vehicleCard);
+
+                const option = document.createElement('option');
+                option.value = vehicle.id;
+                option.textContent = vehicle.name;
+                vehicleSelect.appendChild(option);
+            });
+        }
+
+        function createVehicleCard(vehicle) {
+            const vehicleCard = document.createElement('div');
+            vehicleCard.className = 'vehicle-card';
+            vehicleCard.innerHTML = `
+                <img src="${vehicle.image}" alt="${vehicle.name}">
+                <div class="vehicle-info">
+                    <h3>${vehicle.name}</h3>
+                    <p>Starting from ₹${vehicle.price}/day</p>
+                </div>
+            `;
+            vehicleCard.addEventListener('click', () => showVehicleDetails(vehicle));
+            return vehicleCard;
+        }
+
+        function showVehicleDetails(vehicle) {
+            const modal = document.getElementById('vehicleModal');
+            const modalVehicleName = document.getElementById('modalVehicleName');
+            const modalVehicleImage = document.getElementById('modalVehicleImage');
+            const modalVehicleDescription = document.getElementById('modalVehicleDescription');
+            const modalVehiclePrice = document.getElementById('modalVehiclePrice');
+            const modalBookNow = document.getElementById('modalBookNow');
+
+            modalVehicleName.textContent = vehicle.name;
+            modalVehicleImage.src = vehicle.image;
+            modalVehicleImage.alt = vehicle.name;
+            modalVehicleDescription.textContent = vehicle.description;
+            modalVehiclePrice.textContent = `Price: $${vehicle.price}/day`;
+
+            modalBookNow.onclick = () => {
+                showPage('booking');
+                document.getElementById('vehicleSelect').value = vehicle.id;
+                modal.style.display = 'none';
+            };
+
+            modal.style.display = 'block';
+        }
+
+        function displayReviews() {
+            const reviewsContainer = document.getElementById('reviewsContainer');
+            reviews.forEach(review => {
+                const reviewCard = document.createElement('div');
+                reviewCard.className = 'review-card';
+                reviewCard.innerHTML = `
+                    <p>${review.text}</p>
+                    <p class="author">- ${review.author}</p>
+                `;
+                reviewsContainer.appendChild(reviewCard);
+            });
+        }
+
+        function displayTestimonials() {
+            const testimonialSlides = document.getElementById('testimonialSlides');
+            testimonials.forEach((testimonial, index) => {
+                const slide = document.createElement('div');
+                slide.className = `testimonial-slide ${index === 0 ? 'active' : ''}`;
+                slide.innerHTML = `
+                    <p class="testimonial-text">${testimonial.text}</p>
+                    <p class="testimonial-author">- ${testimonial.author}</p>
+                `;
+                testimonialSlides.appendChild(slide);
+            });
+        }
+
+        let currentTestimonial = 0;
+        function changeTestimonial(direction) {
+            const slides = document.querySelectorAll('.testimonial-slide');
+            slides[currentTestimonial].classList.remove('active');
+            currentTestimonial = (currentTestimonial + direction + slides.length) % slides.length;
+            slides[currentTestimonial].classList.add('active');
+        }
+
+        function displayFAQs() {
+            const faqContainer = document.getElementById('faqContainer');
+            faqs.forEach((faq, index) => {
+                const faqItem = document.createElement('div');
+                faqItem.className = 'faq-item';
+                faqItem.innerHTML = `
+                    <div class="faq-question" onclick="toggleFAQ(${index})">
+                        <h3>${faq.question}</h3>
+                    </div>
+                    <div class="faq-answer">
+                        <p>${faq.answer}</p>
+                    </div>
+                `;
+                faqContainer.appendChild(faqItem);
+            });
+        }
+
+        function toggleFAQ(index) {
+            const faqItems = document.querySelectorAll('.faq-item');
+            faqItems[index].classList.toggle('active');
+        }
+
+        function handleBooking(event) {
+            event.preventDefault();
+            const vehicleId = document.getElementById('vehicleSelect').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const specialRequests = document.getElementById('specialRequests').value;
+
+            if (vehicleId && startDate && endDate && name && email && phone) {
+                const selectedVehicle = vehicles.find(v => v.id == vehicleId);
+                const totalPrice = calculateTotalPrice(selectedVehicle.price, startDate, endDate);
+                const bookingDetails = `
+                    <h3>Booking Details</h3>
+                    <p><strong>Vehicle:</strong> ${selectedVehicle.name}</p>
+                    <p><strong>From:</strong> ${startDate}</p>
+                    <p><strong>To:</strong> ${endDate}</p>
+                    <p><strong>Name:</strong> ${name}</p>
+                    <p><strong>Email:</strong> ${email}</p>
+                    <p><strong>Phone:</strong> ${phone}</p>
+                    <p><strong>Special Requests:</strong> ${specialRequests || 'None'}</p>
+                    <p><strong>Total Price:</strong> $${totalPrice}</p>
+                `;
+                document.getElementById('bookingDetails').innerHTML = bookingDetails;
+                showPage('bookingConfirmation');
+                event.target.reset();
+            } else {
+                alert('Please fill in all required fields');
+            }
+        }
+
+        function handleContact(event) {
+            event.preventDefault();
+            const name = document.getElementById('contactName').value;
+            const email = document.getElementById('contactEmail').value;
+            const phone = document.getElementById('contactPhone').value;
+            const message = document.getElementById('message').value;
+
+            if (name && email && message) {
+                const contactDetails = `
+                    Message received from:
+                    Name: ${name}
+                    Email: ${email}
+                    Phone: ${phone || 'Not provided'}
+                    Message: ${message}
+                `;
+                alert('Thank you for your message. We will get back to you soon!\n\n' + contactDetails);
+                event.target.reset();
+            } else {
+                alert('Please fill in all required fields');
+            }
+        }
+
+        function calculateTotalPrice(pricePerDay, startDate, endDate) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            const days = (end - start) / (1000 * 60 * 60 * 24) + 1; // +1 to include the start day
+            return (pricePerDay * days).toFixed(2);
+        }
+
+        function displayGallery() {
+            const galleryContainer = document.getElementById('imageGallery');
+            vehicles.forEach(vehicle => {
+                const img = document.createElement('img');
+                img.src = vehicle.image;
+                img.alt = vehicle.name;
+                img.className = 'gallery-image';
+                img.onclick = () => showVehicleDetails(vehicle);
+                galleryContainer.appendChild(img);
+            });
+        }
+
+        function handleNewsletter(event) {
+            event.preventDefault();
+            const email = event.target.querySelector('input[type="email"]').value;
+            if (email) {
+                alert(`Thank you for subscribing with email: ${email}`);
+                event.target.reset();
+            } else {
+                alert('Please enter a valid email address');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            displayVehicles();
+            displayReviews();
+            displayTestimonials();
+            displayFAQs();
+            displayGallery();
+            document.getElementById('bookingForm').addEventListener('submit', handleBooking);
+            document.getElementById('contactForm').addEventListener('submit', handleContact);
+            document.getElementById('newsletterForm').addEventListener('submit', handleNewsletter);
+
+            // Close modal when clicking on <span> (x)
+            document.querySelector('.close').onclick = function() {
+                document.getElementById('vehicleModal').style.display = 'none';
+            }
+
+            // Close modal when clicking outside of it
+            window.onclick = function(event) {
+                if (event.target == document.getElementById('vehicleModal')) {
+                    document.getElementById('vehicleModal').style.display = 'none';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

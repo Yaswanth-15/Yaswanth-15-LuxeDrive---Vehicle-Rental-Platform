@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Confirmed - LuxeDrive</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #000;
+            color: #fff;
+            text-align: center;
+            padding: 50px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            background-color: #111;
+            border-radius: 10px;
+        }
+        .btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px;
+            background-color: #ffd700;
+            color: #000;
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 8px;
+        }
+        .btn:hover {
+            background-color: #000;
+            color: #ffd700;
+        }
+        .details p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Booking Confirmed!</h2>
+        <p>Thank you for choosing LuxeDrive. Your luxury experience awaits!</p>
+        <div id="bookingDetails">
+            <h3>Booking ID: #{{ booking.id }}</h3>
+            <div class="details">
+                <p><strong>Name:</strong> {{ booking.name }}</p>
+                <p><strong>Date:</strong> {{ booking.booking_date }}</p>
+                <p><strong>Vehicle Model:</strong> {{ booking.vehicle.name }}</p>
+                <p><strong>Pickup Location:</strong> {{ booking.pickup_location }}</p>
+                <p><strong>Dropoff Location:</strong> {{ booking.dropoff_location }}</p>
+                <p><strong>Total Price:</strong> ₹{{ booking.total_price }}</p>
+                <p><strong>Email:</strong> {{ booking.email }}</p>
+                <p><strong>Phone:</strong> {{ booking.phone }}</p>
+                <p><strong>Special Requests:</strong> {{ booking.specialRequests }}</p>
+            </div>
+        </div>
+        <a href="{% url 'home' %}" class="btn">Return to Home</a>
+        <a href="{% url 'vehicles' %}" class="btn">Explore More Vehicles</a>
+    </div>
+
+</body>
+</html>

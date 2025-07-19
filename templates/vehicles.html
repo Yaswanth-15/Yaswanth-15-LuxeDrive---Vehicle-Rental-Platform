@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LuxeDrive - Premium Car Rentals</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.0/themes/smoothness/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js"></script>
+    <style>
+        /* General Styles */
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            background-color: #000;
+            color: #fff;
+            scroll-behavior: smooth;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
+        }
+
+        h2 {
+            font-size: 3rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .page {
+            display: none;
+            padding-top: 80px;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Header Styles */
+
+        header {
+            background-color: rgba(0, 0, 0, 0.8);
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            top: 0;
+            left: 0;
+            padding: 15px 0;
+            transition: background-color 0.3s ease;
+        }
+
+        header.sticky {
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            color: #ffd700;
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .nav-links {
+            display: flex;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #ffd700;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Vehicles Page Styles */
+
+        .vehicles-search-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        #vehicle-search-input {
+            flex-grow: 1;
+            padding: 10px;
+            background-color: #222;
+            color: #fff;
+            border: 1px solid #333;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+        #vehicle-search-button {
+            background-color: #ffd700;
+            color: #000;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        #vehicle-search-button:hover {
+            background-color: #000;
+            color: #ffd700;
+        }
+
+        #search-suggestions {
+            list-style: none;
+            padding: 0;
+            margin-top: 5px;
+            background-color: #222;
+            border: 1px solid #333;
+            border-radius: 5px;
+            display: none;
+            /* Hidden by default */
+            position: absolute;
+            /* Ensure it's positioned correctly */
+            width: 50%;
+            z-index: 100;
+        }
+
+        #search-suggestions li {
+            padding: 8px 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #search-suggestions li:hover {
+            background-color: #333;
+        }
+
+        .vehicles-container {
+            display: flex;
+            gap: 30px;
+            margin-top: 20px;
+            position: relative;
+        }
+
+        .filters-menu {
+            position: fixed;
+            left: -300px;
+            top: 80px;
+            width: 300px;
+            height: calc(100vh - 80px);
+            background-color: rgba(34, 34, 34, 0.9);
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.1);
+            transition: all 0.3s ease;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .filters-menu.open {
+            left: 0;
+        }
+
+        .filters-toggle {
+            position: fixed;
+            left: 20px;
+            top: 100px;
+            background-color: #ffd700;
+            color: #000;
+            border: none;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 101;
+            transition: all 0.3s ease;
+        }
+
+        .filters-toggle:hover {
+            background-color: #fff;
+        }
+
+        .filters-menu h3 {
+            color: #ffd700;
+            margin-bottom: 20px;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+        }
+
+        .filter-group {
+            margin-bottom: 25px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .filter-group input[type="text"],
+        .filter-group select {
+            width: 100%;
+            padding: 12px;
+            background-color: rgba(51, 51, 51, 0.8);
+            border: 1px solid #ffd700;
+            color: #fff;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-group input[type="text"]:focus,
+        .filter-group select:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.5);
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .radio-group label:hover {
+            color: #ffd700;
+        }
+
+        .filter-group input[type="radio"] {
+            margin-right: 10px;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #ffd700;
+            border-radius: 50%;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .filter-group input[type="radio"]:checked {
+            background-color: #ffd700;
+            box-shadow: 0 0 0 2px #000 inset;
+        }
+
+        #applyFilters {
+            width: 100%;
+            padding: 12px;
+            background-color: #ffd700;
+            color: #000;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #applyFilters:hover {
+            background-color: #fff;
+            color: #000;
+        }
+
+        .vehicle-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            flex-grow: 1;
+        }
+
+        .vehicle-card {
+            /* background-color: rgba(51, 51, 51, 0.8); */
+            background-color: rgba(0, 0, 0);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            text-decoration: none;
+            color: inherit;
+            /* Inherit text color from body */
+        }
+
+        .vehicle-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 30px rgba(255, 215, 0, 0.2);
+        }
+
+        .vehicle-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.3));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .vehicle-card:hover::before {
+            opacity: 1;
+        }
+
+        /* .vehicle-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .vehicle-info {
+            padding: 20px;
+        }
+
+        .vehicle-info h3 {
+            color: #ffd700;
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .vehicle-info p {
+            margin: 0;
+            color: #fff;
+        } */
+
+        .vehicle-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .vehicle-info {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .vehicle-info h3 {
+            font-family: 'Playfair Display', serif;
+            margin-top: 0;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .vehicle-info p {
+            font-size: 1.1rem;
+            color: #fff;
+        }
+
+        /* Responsive Design */
+
+        @media screen and (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            h2 {
+                font-size: 2rem;
+            }
+
+            p {
+                font-size: 1rem;
+            }
+
+            .vehicles-container {
+                flex-direction: column;
+            }
+
+            .filters-menu {
+                width: 100%;
+            }
+
+            .vehicle-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .vehicles-search-container {
+                flex-direction: column;
+                /* Stack elements vertically */
+                align-items: stretch;
+                /* Make items take the full width */
+            }
+
+            #vehicle-search-input {
+                margin-bottom: 10px;
+                /* Add space below the input */
+                margin-right: 0;
+                /* Remove right margin */
+            }
+        }
+
+        /* ADD TO WISHLIST Styles */
+
+        .wishlist-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5em;
+            color: #ffefd5;
+            /* Cream color */
+            padding: 5px;
+            transition: color 0.3s ease;
+        }
+
+        .wishlist-button:hover {
+            color: #ffd700;
+            /* Gold color on hover */
+        }
+
+        /* ADD TO WISHLIST Styles */
+
+        .no-underline {
+            text-decoration: none !important;
+        }
+
+        /* Share button style */
+
+        .share-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5em;
+            color: #ffefd5;
+            /* Cream color */
+            padding: 5px;
+            transition: color 0.3s ease;
+        }
+
+        .share-button:hover {
+            color: #ffd700;
+            /* Gold color on hover */
+        }
+
+        /* Copy Link Button Style */
+
+        .copy-link-button {
+            background-color: #ffd700;
+            color: #000;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: 'Montserrat', sans-serif;
+            margin-top: 5px;
+            display: none;
+            /* Hidden by default */
+        }
+
+        .copy-link-button:hover {
+            background-color: #000;
+            color: #ffd700;
+        }
+
+        /* Share button style */
+
+        /* Copy Link Button Style */
+
+        /* Vertical Icon Container */
+
+        .icon-container {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            /* Align items to the right */
+        }
+
+        /* Vertical Icon Container */
+
+        .icon-container button {
+            margin-bottom: 5px;
+            /* Space between the icons */
+        }
+    </style>
+</head>
+
+<body>
+    <header id="header">
+        <nav class="container">
+            <a href="{% url 'home' %}" class="nav-logo">LuxeDrive</a>
+            <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+            <div class="nav-links">
+                <a href="{% url 'vehicles' %}">Vehicles</a>
+                <a href="{% url 'about' %}">About</a>
+                <a href="{% url 'contact' %}">Contact</a>
+                <!--ADD TO WISHLIST - ADD THE WISHLIST BUTTON-->
+                {% if user.is_authenticated %}
+                <a href="{% url 'wishlist' %}">Wishlist</a>
+                {% endif %}
+                <!--ADD TO WISHLIST - ADD THE WISHLIST BUTTON-->
+                {% if user.is_authenticated %}
+                {% if user.is_customer %}
+                <a href="{% url 'booked_vehicles' %}">My Bookings</a>
+                {% endif %}
+                {% if user.is_owner %}
+                <a href="{% url 'my_vehicles' %}">My Vehicles</a>
+                <a href="{% url 'owner_bookings' %}">My Vehicle Bookings</a>
+                {% endif %}
+                <a href="{% url 'logout' %}">Logout</a>
+                {% else %}
+                <a href="{% url 'login' %}">Login</a>
+                {% endif %}
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div id="vehicles" class="page active">
+            <div class="container">
+                <h2>Our Luxury Fleet</h2>
+
+                <div class="vehicles-search-container">
+                    <input type="text" id="vehicle-search-input" placeholder="Search vehicles..." autocomplete="off" value="{{ request.GET.term }}">
+                    <button id="vehicle-search-button">Search</button>
+
+                </div>
+
+                <button class="filters-toggle" onclick="toggleMenu()">☰</button>
+                <div class="vehicles-container">
+                    <div class="filters-menu">
+                        <!-- ... (your filter menu) ... -->
+                    </div>
+                    <div class="vehicle-grid" id="fullVehicleGrid">
+                        <!-- Vehicle cards will be dynamically inserted here -->
+                        {% for vehicle in vehicles %}
+                        <div class="vehicle-card" onclick="window.location.href='{% url 'booking' %}?vehicle_id={{vehicle.id}}'">
+                            
+                                <img src="{{ vehicle.image.url }}" alt="{{ vehicle.name }}">
+                                <div class="vehicle-info">
+                                    <h3>{{ vehicle.name }}</h3>
+                                    <p>Starting from ₹{{ vehicle.price }}/day</p>
+                                </div>
+                           
+                            <!-- Vertical Icon Container -->
+                            <div class="icon-container">
+                                <!-- ADD TO WISHLIST - Add the wishlist button -->
+                                {% if user.is_authenticated %}
+                                <form method="post" {% if vehicle.id in wishlist_vehicles %}action="{% url 'remove_from_wishlist' vehicle.id %}"{% else %}action="{% url 'add_to_wishlist' vehicle.id %}"{% endif %}>
+                                    {% csrf_token %}
+                                    <button type="submit" class="wishlist-button">
+                                        {% if vehicle.id in wishlist_vehicles %}
+                                        <i class="fas fa-heart"></i>
+                                        {% else %}
+                                        <i class="far fa-heart"></i>
+                                        {% endif %}
+                                    </button>
+                                </form>
+                                {% endif %}
+                                <!-- ADD TO WISHLIST - Add the wishlist button -->
+
+                                <!-- Share button -->
+                                <button class="share-button" onclick="checkAndShare('{% url 'booking' %}?vehicle_id={{ vehicle.id }}', this)">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                                <button class="copy-link-button" onclick="copyToClipboard('{% url 'booking' %}?vehicle_id={{ vehicle.id }}', this)">Copy Link</button>
+                                <!-- Share button -->
+                            </div>
+                            <!-- Vertical Icon Container -->
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function toggleMenu() {
+            const navLinks = document.querySelector('.nav-links');
+            navLinks.classList.toggle('active');
+        }
+
+        function checkAndShare(bookingUrl, buttonElement) {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Check out this LuxeDrive Vehicle!',
+                    url: bookingUrl
+                }).then(() => {
+                    console.log('Shared successfully');
+                }).catch((error) => {
+                    console.log('Error sharing', error);
+                });
+            } else {
+                // Show the copy link button
+                let copyButton = buttonElement.nextElementSibling; // Get the copy button
+                copyButton.style.display = 'inline-block';
+            }
+        }
+
+        function copyToClipboard(text, buttonElement) {
+            navigator.clipboard.writeText(text)
+                .then(() => {
+                    buttonElement.textContent = 'Copied!'; // Change button text
+                    setTimeout(() => {
+                        buttonElement.textContent = 'Copy Link'; // Revert text after a delay
+                    }, 2000);
+                })
+                .catch(err => {
+                    console.error('Could not copy text: ', err);
+                    alert('Sorry, could not copy the link. Please copy it manually: ' + text);
+                });
+        }
+    </script>
+    <script>
+        $(function() {
+            $("#vehicle-search-input").autocomplete({
+                source: function(request, response) {
+                    $.ajax({
+                        url: "{% url 'vehicles' %}", // Call the vehicles view to handle suggestions
+                        dataType: "json",
+                        data: {
+                            'term': request.term // Pass the search term to the view
+                        },
+                        success: function(data) {
+                            response($.map(data, function(item) {
+                                return {
+                                    label: item.name,
+                                    value: item.name,
+                                    url: "{% url 'vehicles' %}?term=" + item.name // Redirect to Vehicles page with search term
+                                };
+                            }));
+                        }
+                    });
+                },
+                minLength: 2,
+                select: function(event, ui) {
+                    window.location.href = ui.item.url; // Redirect to Vehicles page with the search term
+                }
+            }).autocomplete("instance")._renderItem = function(ul, item) {
+                return $("<li>")
+                    .append("<div>" + item.label + "</div>")
+                    .appendTo(ul);
+            };
+
+            // Handle search button click
+            $('#vehicle-search-button').on('click', function() {
+                var searchTerm = $('#vehicle-search-input').val();
+                if (searchTerm) {
+                    window.location.href = "{% url 'vehicles' %}?term=" + searchTerm; // Redirect to the same page with the search term
+                } else {
+                    window.location.href = "{% url 'vehicles' %}"; // Clear search results and show all vehicles
+                }
+            });
+
+            // Clear search results when input is cleared
+            $('#vehicle-search-input').on('input', function() {
+                if (!this.value) {
+                    window.location.href = "{% url 'vehicles' %}"; // Reload the vehicles page to show all vehicles
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

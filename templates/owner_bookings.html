@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Vehicle Bookings - LuxeDrive</title>
+     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Link your CSS file if you have one -->
+    <style>
+     /*Reuse existing styles, modify as needed*/
+    body, html {
+        margin: 0;
+        padding: 0;
+        font-family: 'Montserrat', sans-serif;
+        background-color: #000;
+        color: #fff;
+    }
+    .container {
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 20px;
+        background-color: #111;
+        border-radius: 8px;
+    }
+    h2 {
+        font-family: 'Playfair Display', serif;
+        color: #ffd700;
+        text-align: center;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    th, td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #333;
+          text-transform: capitalize;
+    }
+    th {
+        background-color: #222;
+        color: #fff;
+    }
+    tr:nth-child(even) {
+        background-color: #1a1a1a;
+    }
+     /* Style for the "View Details" link/button */
+    .view-details-link {
+        color: #ffd700;
+        text-decoration: none;
+        display: inline-block;
+        padding: 8px 12px;
+        border-radius: 4px;
+        background-color: #333; /* A subtle background */
+        margin-top: 10px;
+    }
+    .view-details-link:hover {
+        background-color: #555;
+    }
+    /*Style for Table Cells with Button*/
+    .table-cell-with-button {
+        display: flex;
+        justify-content: space-between; /* Distribute space evenly */
+        align-items: center; /* Align items vertically */
+    }
+    /* Additional styles for button appearance */
+    .view-details-button {
+        background-color: #ffd700;
+        color: #000;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        font-weight: bold;
+         font-family: 'Montserrat', sans-serif;
+         white-space: nowrap; /* Prevent text from wrapping */
+    }
+    .view-details-button:hover {
+        background-color: #000;
+        color: #ffd700;
+    }
+    a {
+        color: #ffd700;
+        text-decoration: none;
+        display: inline-block; /* Make the link a block-level element for spacing */
+        margin-top: 10px; /* Add margin above the link */
+    }
+    a:hover {
+        text-decoration: underline; /* Underline on hover */
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <h2>My Vehicle Bookings</h2>
+    {% if bookings %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Customer</th>
+                    <th>Vehicle</th>
+                    <th>Booking Date</th>
+                    <th>Total Price</th>
+                    <th></th> <!-- Empty header for the button -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                    <tr>
+                        <td>{{ booking.customer.username }}</td>
+                        <td>{{ booking.vehicle.name }}</td>
+                        <td>{{ booking.booking_date }}</td>
+                        <td>₹{{ booking.total_price }}</td>
+                         <td class="table-cell-with-button">
+                             <a href="{% url 'booking_confirmation' %}?booking_id={{ booking.id }}" class="view-details-button">View Details</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No bookings for your vehicles yet.</p>
+    {% endif %}
+    <a href="{% url 'home' %}">Return to Home</a>
+</div>
+</body>
+</html>

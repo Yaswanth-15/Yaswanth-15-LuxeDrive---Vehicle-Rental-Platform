@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Book Your Ride</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet" />
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.1.0/mapbox-gl.css" rel="stylesheet">
+
+    <!-- Open Graph Meta Tags for Link Previews -->
+    <meta property="og:title" content="{{ vehicle.name }} - LuxeDrive Booking" />
+    <meta property="og:description" content="Book your luxury rental of the {{ vehicle.name }} starting from ₹{{ vehicle.price }}/day on LuxeDrive!" />
+    {% if vehicle.image %}
+        <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ vehicle.image.url }}" />
+    {% endif %}
+    <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{% url 'booking' %}?vehicle_id={{ vehicle.id }}" />
+    <meta property="og:type" content="website" />
+    <!-- End Open Graph Meta Tags -->
+
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            font-family: "Montserrat", sans-serif;
+            background-color: #000;
+            color: #fff;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .booking-form {
+            background-color: #111;
+            padding: 40px;
+            color: #fff;
+            border-radius: 8px;
+            margin-top: 50px;
+        }
+        .booking-form h2 {
+            text-align: center;
+        }
+        form {
+            display: grid;
+            gap: 20px;
+        }
+        input,
+        select,
+        textarea {
+            width: 100%;
+            height: 45px;
+            padding: 12px;
+            background-color: #222;
+            border: none;
+            color: #fff;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border: 2px solid #ffd700;
+        }
+        button {
+            background-color: #ffd700;
+            color: #000;
+            padding: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            border-radius: 8px;
+        }
+        button:hover {
+            background-color: #000;
+            color: #ffd700;
+        }
+        .phone-input {
+            display: flex;
+            width: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #222;
+        }
+
+        .phone-input input {
+            border: none;
+            padding: 12px;
+            font-size: 16px;
+        }
+
+        #countryCode {
+            width: 60px;
+            color: black;
+            background: #ffd700;
+            text-align: center;
+            font-weight: bold;
+            padding: 12px;
+            border-radius: 8px 0 0 8px;
+        }
+
+        #phone {
+            flex-grow: 1;
+            outline: none;
+            border: none;
+            padding: 12px;
+            background: #222;
+            color: #fff;
+            border-radius: 0 8px 8px 0;
+        }
+
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-color: #222;
+            padding: 12px;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            width: 100%;
+            font-size: 16px;
+            cursor: pointer;
+            position: relative;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M7 10l5 5 5-5z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 20px;
+        }
+        textarea {
+            resize: none; /* Prevent manual resizing */
+            overflow: hidden; /* Hide scrollbar when not needed */
+            min-height: 45px; /* Ensure a default height */
+        }
+        #vehicleDetails {
+            padding: 20px;
+            background-color: #222;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        #vehicleDetails img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        #vehicleDetails h3 {
+            margin-bottom: 10px;
+        }
+        #vehicleDetails p {
+            font-size: 1.1rem;
+        }
+    #map-pickup, #map-dropoff {
+        position: relative;
+        top: 0px;
+        bottom: 0;
+        width: 100%;
+        height: 300px;
+        border-radius: 8px;
+        display: none;
+        margin-top: 10px;
+    }
+    #search-container {
+        position: relative;
+        margin-bottom: 10px;
+    }
+    #search-input-pickup, #search-input-dropoff {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        border: 1px solid #ffd700;
+        border-radius: 8px;
+        background-color: #222;
+        color: #fff;
+    }
+    .autocomplete-list {
+        position: absolute;
+        top: 55px;
+        left: 0;
+        width: 100%;
+        background-color: #222;
+        border: 1px solid #ffd700;
+        border-top: none;
+        border-radius: 0 0 8px 8px;
+        z-index: 1001;
+        display: none;
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+    .autocomplete-list li {
+        padding: 12px;
+        cursor: pointer;
+        color: #fff;
+    }
+    .autocomplete-list li:hover {
+        background-color: #333;
+    }
+      /* Style for active map (shown after selection) */
+    .active-map {
+        display: block !important;
+    }
+    .gps-button-container {
+        position: relative;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: flex-end; /* Align to the right */
+    }
+      label {
+        color: #fff;
+        display: block; /* Ensure labels take full width */
+        margin-bottom: 5px;
+    }
+    .fieldWrapper {
+      margin-bottom: 15px;
+    }
+</style>
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.1.0/mapbox-gl.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="booking-form">
+        <h2>Book Your Luxury Experience</h2>
+
+        {% if vehicle %}
+        <div id="vehicleDetails">
+            <img src="{{ vehicle.image.url }}" alt="{{ vehicle.name }}">
+            <h3>{{ vehicle.name }}</h3>
+            <p>{{ vehicle.description }}</p>
+            <p>Starting from ₹{{ vehicle.price }}/day</p>
+        </div>
+        {% else %}
+        <p>No vehicle selected.</p>
+        {% endif %}
+
+        <form id="bookingForm" method="post">
+            {% csrf_token %}
+
+            <label for="startDate">Pick-Up Date:</label>
+            <input type="date" id="startDate" name="startDate" placeholder="Select pick-up date" required />
+
+            <label for="endDate">Drop-Off Date:</label>
+            <input type="date" id="endDate" name = "endDate" placeholder="Select drop-off date" required />
+
+            <label for="pickupLocation">Pick-Up Location:</label>
+            <div class="gps-button-container">
+                 <button type="button" id="gps-button-pickup">Use Current Location</button>
+             </div>
+            <div id="search-container">
+                <input type="text" id="search-input-pickup" name="pickupLocation" placeholder="Search for a pick-up location..." required>
+                <ul class="autocomplete-list" id="autocomplete-list-pickup"></ul>
+            </div>
+            <div id="map-pickup" class="map"></div>
+
+            <label for="dropoffLocation">Drop-Off Location:</label>
+               <div class="gps-button-container">
+                   <button type="button" id="gps-button-dropoff">Use Current Location</button>
+               </div>
+            <div id="search-container">
+                <input type="text" id="search-input-dropoff" name="dropoffLocation" placeholder="Search for a drop-off location..." required>
+                <ul class="autocomplete-list" id="autocomplete-list-dropoff"></ul>
+            </div>
+            <div id="map-dropoff" class="map"></div>
+
+            <!-- Hidden input fields to store location data -->
+            <input type="hidden" id="pickup-location-name" name="pickupLocationName" value="">
+            <input type="hidden" id="pickup-pin-coordinates" name="pickupPinCoordinates" value="">
+            <input type="hidden" id="dropoff-location-name" name="dropoffLocationName" value="">
+            <input type="hidden" id="dropoff-pin-coordinates" name="dropoffPinCoordinates" value="">
+
+            <label for="name">Full Name:</label>
+            <input type="text" id="name" name="name" placeholder="Enter your full name" required />
+
+            <label for="email">Email Address:</label>
+            <input type="email" id="email" name="email" placeholder="Enter your email" required />
+
+            <label for="phone">Phone Number:</label>
+            <div class="phone-input">
+                <input type="text" value="+91" id="countryCode" readonly />
+                <input type="tel" id="phone" name ="phone" placeholder="Enter phone number" pattern="[0-9]{10}" maxlength="10" required />
+            </div>
+
+            <label for="specialRequests">Special Requests (Optional):</label>
+            <textarea id="specialRequests" name="specialRequests" placeholder="Any additional requests..." rows="1"></textarea>
+
+            <h3>Total Price: ₹<span id="totalPrice">0</span></h3>
+               <input type="hidden" id="totalPriceInput" name="totalPrice" value="">
+
+            {% if user.is_authenticated %}
+            <button type="submit">Book Now</button>
+            {% else %}
+            <p>Please <a href="{% url 'login' %}">log in</a> to book this vehicle.</p>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        mapboxgl.accessToken = 'pk.eyJ1IjoiZmF2b3VyLXRoZS1kZXYiLCJhIjoiY2xncjd3c2tqMTV2YjNqbXR3NjVsczN1NSJ9.3_ntmLyYZsHvNTeUQYGIwQ';
+
+        const startDateInput = document.getElementById("startDate");
+        const endDateInput = document.getElementById("endDate");
+        const totalPriceDisplay = document.getElementById("totalPrice");
+        const totalPriceInput = document.getElementById('totalPriceInput');
+
+        const searchInputPickup = document.getElementById('search-input-pickup');
+        const searchInputDropoff = document.getElementById('search-input-dropoff');
+        const autocompleteListPickup = document.getElementById('autocomplete-list-pickup');
+        const autocompleteListDropoff = document.getElementById('autocomplete-list-dropoff');
+        const pickupMapDiv = document.getElementById('map-pickup');
+        const dropoffMapDiv = document.getElementById('map-dropoff');
+        const gpsButtonPickup = document.getElementById('gps-button-pickup');
+        const gpsButtonDropoff = document.getElementById('gps-button-dropoff');
+
+        let mapPickup = null;
+        let mapDropoff = null;
+        let markerPickup;
+        let markerDropoff;
+        let currentAutocompleteRequest = null;
+
+        let pickupLocationName = '';
+        let pickupPinCoordinates = null;
+        let dropoffLocationName = '';
+        let dropoffPinCoordinates = null;
+
+        // GPS Button Functionality
+        function getCurrentLocation(locationType) {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        const { latitude, longitude } = position.coords;
+                        fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${mapboxgl.accessToken}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.features && data.features.length > 0) {
+                                    const placeName = data.features[0].place_name;
+                                    flyToLocation([longitude, latitude], placeName, locationType);
+
+                                    if (locationType === 'pickup') {
+                                        searchInputPickup.value = placeName;
+                                    } else {
+                                        searchInputDropoff.value = placeName;
+                                    }
+                                } else {
+                                    flyToLocation([longitude, latitude], "Current Location", locationType);
+                                    if (locationType === 'pickup') {
+                                        searchInputPickup.value = "Current Location";
+                                    } else {
+                                        searchInputDropoff.value = "Current Location";
+                                    }
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error reverse geocoding:', error);
+                                flyToLocation([longitude, latitude], "Current Location", locationType);
+                                if (locationType === 'pickup') {
+                                    searchInputPickup.value = "Current Location";
+                                } else {
+                                    searchInputDropoff.value = "Current Location";
+                                }
+                            });
+                    },
+                    error => {
+                        alert('Error getting location: ' + error.message);
+                    }
+                );
+            } else {
+                alert('Geolocation is not supported by this browser.');
+            }
+        }
+
+        // Function to handle autosuggest and location selection for each location input
+        function setupLocationSearch(searchInput, autocompleteList, locationType) {
+            searchInput.addEventListener('input', function() {
+                const searchText = searchInput.value;
+
+                if (searchText.length < 3) {
+                    clearAutocomplete(autocompleteList);
+                    return;
+                }
+
+                if (currentAutocompleteRequest) {
+                    currentAutocompleteRequest.abort();
+                }
+
+                currentAutocompleteRequest = new AbortController();
+                const signal = currentAutocompleteRequest.signal;
+
+                fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${searchText}.json?access_token=${mapboxgl.accessToken}&autocomplete=true`, { signal: signal })
+                    .then(response => response.json())
+                    .then(data => {
+                        populateAutocomplete(data.features, autocompleteList, locationType, searchInput);
+                    })
+                    .catch(error => {
+                        if (error.name === 'AbortError') {
+                            return;
+                        }
+                        console.error('Error:', error);
+                    });
+            });
+
+            autocompleteList.addEventListener('click', function(e) {
+                if (e.target && e.target.nodeName === "LI") {
+                    const feature = JSON.parse(e.target.getAttribute('data-feature'));
+                    if (locationType === 'pickup') {
+                        pickupMapDiv.classList.add('active-map');
+                    } else {
+                        dropoffMapDiv.classList.add('active-map');
+                    }
+
+                    searchInput.value = feature.place_name;
+                    clearAutocomplete(autocompleteList);
+                    flyToLocation(feature.center, feature.place_name, locationType);
+                }
+            });
+        }
+
+        function populateAutocomplete(features, autocompleteList, locationType, searchInput) {
+            clearAutocomplete(autocompleteList);
+            autocompleteList.style.display = 'block';
+
+            features.forEach(feature => {
+                const li = document.createElement('li');
+                li.textContent = feature.place_name;
+                li.setAttribute('data-feature', JSON.stringify(feature));  // Store the feature object
+                li.addEventListener('click', function () {
+                    clearAutocomplete(autocompleteList);
+                    searchInput.value = feature.place_name;
+                    flyToLocation(feature.center, feature.place_name, locationType);
+                });
+                autocompleteList.appendChild(li);
+            });
+        }
+
+        function flyToLocation(coordinates, placeName, locationType) {
+            let mapDiv = (locationType === 'pickup') ? pickupMapDiv : dropoffMapDiv;
+            let map = (locationType === 'pickup') ? mapPickup : mapDropoff;
+            let marker = (locationType === 'pickup') ? markerPickup : markerDropoff;
+
+            mapDiv.style.display = 'block';
+
+            if (locationType === 'pickup') {
+                pickupLocationName = placeName;
+                pickupPinCoordinates = coordinates;
+                document.getElementById('pickup-location-name').value = placeName;
+                document.getElementById('pickup-pin-coordinates').value = coordinates.join(',');
+            } else if (locationType === 'dropoff') {
+                dropoffLocationName = placeName;
+                dropoffPinCoordinates = coordinates;
+                document.getElementById('dropoff-location-name').value = placeName;
+                document.getElementById('dropoff-pin-coordinates').value = coordinates.join(',');
+            }
+
+            if (!map) {
+                map = new mapboxgl.Map({
+                    container: locationType === 'pickup' ? 'map-pickup' : 'map-dropoff',
+                    style: 'mapbox://styles/mapbox/streets-v12',
+                    center: coordinates,
+                    zoom: 12
+                });
+                map.addControl(new mapboxgl.NavigationControl());
+
+                marker = new mapboxgl.Marker({ draggable: true })
+                    .setLngLat(coordinates)
+                    .addTo(map);
+
+                marker.on('dragend', () => {
+                    const newCoordinates = [marker.getLngLat().lng, marker.getLngLat().lat];
+                    if (locationType === 'pickup') {
+                        pickupPinCoordinates = newCoordinates;
+                        document.getElementById('pickup-pin-coordinates').value = newCoordinates.join(',');
+                    } else if (locationType === 'dropoff') {
+                        dropoffPinCoordinates = newCoordinates;
+                        document.getElementById('dropoff-pin-coordinates').value = newCoordinates.join(',');
+                    }
+                });
+
+                map.on('click', (e) => {
+                    marker.setLngLat([e.lngLat.lng, e.lngLat.lat]);
+                    const newCoordinates = [e.lngLat.lng, e.lngLat.lat];
+                    if (locationType === 'pickup') {
+                        pickupPinCoordinates = newCoordinates;
+                        document.getElementById('pickup-pin-coordinates').value = newCoordinates.join(',');
+                    } else if (locationType === 'dropoff') {
+                        dropoffPinCoordinates = newCoordinates;
+                        document.getElementById('dropoff-pin-coordinates').value = newCoordinates.join(',');
+                    }
+                });
+
+                if (locationType === "pickup") {
+                    mapPickup = map;
+                    markerPickup = marker;
+                } else {
+                    mapDropoff = map;
+                    markerDropoff = marker;
+                }
+            } else {
+                map.flyTo({
+                    center: coordinates,
+                    essential: true
+                });
+                marker.setLngLat(coordinates);
+
+                if (locationType === "pickup") {
+                    mapPickup = map;
+                    markerPickup = marker;
+                } else {
+                    mapDropoff = map;
+                    markerDropoff = marker;
+                }
+            }
+
+            if (locationType === 'pickup') {
+                pickupMapDiv.classList.add('active-map');
+            } else if (locationType === 'dropoff') {
+                dropoffMapDiv.classList.add('active-map');
+            }
+        }
+
+        // GPS Button Functionality
+        function getCurrentLocation(locationType) {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        const { latitude, longitude } = position.coords;
+                        fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${mapboxgl.accessToken}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.features && data.features.length > 0) {
+                                    const placeName = data.features[0].place_name;
+                                    flyToLocation([longitude, latitude], placeName, locationType);
+
+                                    if (locationType === 'pickup') {
+                                        searchInputPickup.value = placeName;
+                                    } else {
+                                        searchInputDropoff.value = placeName;
+                                    }
+                                } else {
+                                    flyToLocation([longitude, latitude], "Current Location", locationType);
+                                    if (locationType === 'pickup') {
+                                        searchInputPickup.value = "Current Location";
+                                    } else {
+                                        searchInputDropoff.value = "Current Location";
+                                    }
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error reverse geocoding:', error);
+                                flyToLocation([longitude, latitude], "Current Location", locationType);
+                                if (locationType === 'pickup') {
+                                    searchInputPickup.value = "Current Location";
+                                } else {
+                                    searchInputDropoff.value = "Current Location";
+                                }
+                            });
+                    },
+                    error => {
+                        alert('Error getting location: ' + error.message);
+                    }
+                );
+            } else {
+                alert('Geolocation is not supported by this browser.');
+            }
+        }
+
+        // Event listeners for autosuggest and location selection
+        setupLocationSearch(searchInputPickup, autocompleteListPickup, 'pickup');
+        setupLocationSearch(searchInputDropoff, autocompleteListDropoff, 'dropoff');
+
+        // GPS button event listeners
+        gpsButtonPickup.addEventListener('click', () => getCurrentLocation('pickup'));
+        gpsButtonDropoff.addEventListener('click', () => getCurrentLocation('dropoff'));
+
+        const bookingForm = document.getElementById("bookingForm");
+
+        function calculateTotalPrice() {
+            const vehiclePrice = {{ vehicle.price }};
+            if (!vehiclePrice) return;
+
+            const startDate = new Date(startDateInput.value);
+            const endDate = new Date(endDateInput.value);
+            const timeDiff = endDate - startDate;
+            const days = timeDiff > 0 ? Math.ceil(timeDiff / (1000 * 60 * 60 * 24)) : 0;
+
+            const totalPrice = days * vehiclePrice;
+            totalPriceDisplay.textContent = totalPrice > 0 ? totalPrice : 0;
+            totalPriceInput.value = totalPrice > 0 ? totalPrice : 0;
+        }
+
+        const specialRequests = document.getElementById("specialRequests");
+        function autoResize() {
+            this.style.height = "auto";
+            this.style.height = this.scrollHeight + "px";
+        }
+
+        specialRequests.addEventListener("input", autoResize);
+        startDateInput.addEventListener("change", calculateTotalPrice);
+        endDateInput.addEventListener("change", calculateTotalPrice);
+        startDateInput.addEventListener("input", function () {
+            calculateTotalPrice();
+        });
+
+        endDateInput.addEventListener("input", function () {
+            calculateTotalPrice();
+        });
+
+       // Initialize location fields based on URL parameters
+        function initializeLocationFields() {
+            const params = new URLSearchParams(window.location.search);
+            searchInputPickup.value = params.get("pickup") || "";
+            searchInputDropoff.value = params.get("dropoff") || "";
+        };
+
+        initializeLocationFields();
+    });
+</script>
+</body>
+</html>

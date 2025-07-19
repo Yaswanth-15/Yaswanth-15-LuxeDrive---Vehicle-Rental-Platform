@@ -1,0 +1,42 @@
+{
+            'id': 1,
+            'name': 'Rolls-Royce Phantom',
+            'image': 'https://images.unsplash.com/photo-1563720360172-67b8f3dce741?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%D&auto=format&fit=crop&w=1740&q=80',
+            'price': 1500,
+            'description': 'Experience unparalleled luxury with the Rolls-Royce Phantom. This iconic vehicle offers supreme comfort and sophistication.'
+        },
+        {
+            'id': 2,
+            'name': 'Bentley Continental GT',
+            'image': 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%D&auto=format&fit=crop&w=1740&q=80',
+            'price': 1200,
+            'description': 'The Bentley Continental GT combines power with elegance. Perfect for those who demand performance and luxury.'
+        },
+        {
+            'id': 3,
+            'name': 'Mercedes-Benz S-Class',
+            'image': 'https://images.pexels.com/photos/18370955/pexels-photo-18370955/free-photo-of-black-mercedes-s-class.jpeg',
+            'price': 800,
+            'description': 'The Mercedes-Benz S-Class sets the standard for luxury sedans with its cutting-edge technology and refined comfort.'
+        },
+        {
+            'id': 4,
+            'name': 'Lamborghini Aventador',
+            'image': 'https://images.unsplash.com/photo-1544829099-b9a0c07fad1a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%D&auto=format&fit=crop&w=1740&q=80',
+            'price': 2000,
+            'description': 'For the thrill-seekers, the Lamborghini Aventador offers unmatched performance and head-turning design.'
+        },
+        {
+            'id': 5,
+            'name': 'Aston Martin DB11',
+            'image': 'https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%D&auto=format&fit=crop&w=1469&q=80',
+            'price': 1800,
+            'description': 'The Aston Martin DB11 embodies timeless British elegance with modern performance capabilities.'
+        },
+        {
+            'id': 6,
+            'name': 'Ferrari 488 GTB',
+            'image': 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%D&auto=format&fit=crop&w=1470&q=80',
+            'price': 2200,
+            'description': 'Experience the thrill of Italian engineering with the Ferrari 488 GTB, a masterpiece of speed and style.'
+        },

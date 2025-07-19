@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Vehicle - LuxeDrive</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+           /*Reuse existing styles, modify as needed*/
+            body, html {
+                margin: 0;
+                padding: 0;
+                font-family: 'Montserrat', sans-serif;
+                background-color: #000;
+                color: #fff;
+            }
+            .container {
+                max-width: 600px;
+                margin: 50px auto;
+                padding: 20px;
+                background-color: #111;
+                border-radius: 8px;
+            }
+            h2 {
+                font-family: 'Playfair Display', serif;
+                color: #ffd700;
+                text-align: center;
+            }
+            form {
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+            }
+            label {
+                color: #fff;
+                display: block; /* Ensure labels take full width */
+                margin-bottom: 5px;
+            }
+            input, textarea {
+                padding: 10px;
+                border: 1px solid #333;
+                background-color: #222;
+                color: #fff;
+                border-radius: 4px;
+                width: 100%; /* Make inputs take full width */
+                box-sizing: border-box; /* Include padding/border in width */
+            }
+           textarea {
+                resize: vertical; /* Allow vertical resizing */
+                min-height: 100px; /* Ensure a minimum height */
+            }
+            button {
+                background-color: #ffd700;
+                color: #000;
+                padding: 10px 15px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-weight: bold;
+                width: auto; /* Adjust width to content */
+                margin-top: 10px; /* Add some spacing */
+            }
+            button:hover {
+                background-color: #000;
+                color: #ffd700;
+            }
+           .helptext {
+                color: #999;
+                font-style: italic;
+                font-size: 0.9em;
+                margin-top: 5px;
+                display: block;
+            }
+            .errorlist {
+                color: red;
+                margin: 0;
+                padding: 0;
+                list-style: none;
+            }
+             .image-choice {
+                margin-bottom: 15px;
+                border: 1px solid #333;
+                padding: 10px;
+                border-radius: 4px;
+            }
+            .image-choice label {
+                margin-bottom: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h2>Add Vehicle</h2>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <label for="{{ form.name.id_for_label }}">{{ form.name.label }}:</label>
+                {{ form.name }}
+                {{ form.name.errors }}
+
+                <div class="image-choice">
+                    <label for="{{ form.image_url.id_for_label }}">Image URL:</label>
+                    {{ form.image_url }}
+                    {{ form.image_url.errors }}
+                    {% if form.image_url.help_text %}
+                        <p class="helptext">{{ form.image_url.help_text }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="image-choice">
+                    <label for="{{ form.image.id_for_label }}">Upload Image File:</label>
+                    {{ form.image }}
+                    {{ form.image.errors }}
+                    {% if form.image.help_text %}
+                        <p class="helptext">{{ form.image.help_text }}</p>
+                    {% endif %}
+                </div>
+
+                <label for="{{ form.price.id_for_label }}">{{ form.price.label }}:</label>
+                {{ form.price }}
+                {{ form.price.errors }}
+
+                <label for="{{ form.description.id_for_label }}">{{ form.description.label }}:</label>
+                {{ form.description }}
+                {{ form.description.errors }}
+
+                <button type="submit">Add Vehicle</button>
+                <a href="{% url 'my_vehicles' %}">Cancel</a>
+            </form>
+        </div>
+    </body>
+</html>

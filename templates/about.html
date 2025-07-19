@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LuxeDrive - About Us</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* General Styles */
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            background-color: #000;
+            color: #fff;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: rgba(0, 0, 0, 0.8);
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            top: 0;
+            left: 0;
+            padding: 15px 0;
+            transition: background-color 0.3s ease;
+        }
+        header.sticky {
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-logo {
+            color: #ffd700;
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+        }
+        .nav-links {
+            display: flex;
+        }
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+        .nav-links a:hover {
+            color: #ffd700;
+        }
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* About Page Styles */
+        .about-content {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            padding-top: 100px;
+        }
+        .about-text {
+            flex: 1;
+        }
+        .about-image {
+            flex: 1;
+            max-width: 100%;
+        }
+        .about-image img {
+            width: 100%;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+        }
+        .about-image img:hover {
+            transform: scale(1.05);
+        }
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
+        }
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Footer Styles */
+        footer {
+            background-color: #000;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+            position:relative;
+            bottom:0;
+            width:100%;
+        }
+        footer a {
+            color: #ffd700;
+            text-decoration: none;
+        }
+
+        /* Responsive Design */
+        @media screen and (max-width: 768px) {
+            .about-content {
+                flex-direction: column;
+            }
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background-color: rgba(0, 0, 0, 0.9);
+                flex-direction: column;
+                padding: 20px;
+            }
+            .nav-links.active { display: flex; }
+            .nav-links a { margin: 10px 0; }
+            .menu-toggle { display: block; }
+        }
+    </style>
+</head>
+<body>
+    <header id="header">
+        <nav class="container">
+            <a href="{% url 'home' %}" class="nav-logo">LuxeDrive</a>
+            <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+            <div class="nav-links">
+                <a href="{% url 'vehicles' %}">Vehicles</a>
+                <a href="{% url 'about' %}">About</a>
+                <a href="{% url 'contact' %}">Contact</a>
+                {% if user.is_authenticated %}
+                    {% if user.is_customer %}
+                        <a href="{% url 'booked_vehicles' %}">My Bookings</a>
+                    {% endif %}
+                    {% if user.is_owner %}
+                        <a href="{% url 'my_vehicles' %}">My Vehicles</a>
+                        <a href="{% url 'owner_bookings' %}">My Vehicle Bookings</a>
+                    {% endif %}
+                    <a href="{% url 'logout' %}">Logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}">Login</a>
+                {% endif %}
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <section class="about-content">
+                <h2>About LuxeDrive</h2>
+                <div class="about-image">
+                    <img src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Luxury cars in showroom">
+                </div>
+                <div class="about-text">
+                    <p>LuxeDrive is the premier luxury car rental service, offering an unparalleled fleet of high-end vehicles for those who demand the very best. Our mission is to provide an extraordinary driving experience coupled with impeccable service.</p>
+                    <p>Founded in 2010, we have consistently set the standard for luxury car rentals, catering to discerning clients for special occasions, business trips, or simply for the pleasure of driving a world-class automobile.</p>
+                    <p>At LuxeDrive, we believe that luxury is in the details. From our meticulously maintained vehicles to our personalized customer service, every aspect of your rental experience is crafted to exceed your expectations.</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2024 LuxeDrive - Luxury Car Rentals | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+    </footer>
+
+    <script>
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('header');
+            if (window.scrollY > 50) {
+                header.classList.add('sticky');
+            } else {
+                header.classList.remove('sticky');
+            }
+        });
+
+        function toggleMenu() {
+            const navLinks = document.querySelector('.nav-links');
+            navLinks.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>
